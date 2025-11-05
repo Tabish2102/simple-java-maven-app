@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+    tools { maven 'M3' }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                deploy adapters: [tomcat9(
+                    credentialsId: 'tomcat-creds',
+                    url: 'http://host.docker.internal:8888',
+                    path: '/app-231456'
+                )], war: 'target/*.war'
+            }
+        }
+    }
+}
